@@ -11,7 +11,7 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-const expireTime = 24 * 60 * 60 * 1000;
+const expireTime = 1 * 60 * 60 * 1000;
 
 const mongodb_host = process.env.MONGODB_HOST;
 const mongodb_user = process.env.MONGODB_USER;
@@ -57,7 +57,7 @@ app.get('/nosql-injection', async (req,res) => {
     res.send(`<h1>Hello ${username}</h1>`);
 });
 
-
+app.use("/img", "/images");
 
 app.use(session({
     secret: node_session_secret,
@@ -66,7 +66,11 @@ app.use(session({
 }))
 
 app.get("/", (req, res) => {
-    res.send("<a href='/login'>Login</a><br><a href='/signup'>Sign Up</a>");
+    if (!req.session.authenticated) {
+        res.send("<a href='/login'>Login</a><br><a href='/signup'>Sign Up</a>");
+    } else {
+        res.redirect("/members");
+    }
 });
 
 app.get("/login", (req, res) => {
@@ -172,10 +176,11 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/members", (req, res) => {
+    var num = Math.floor(Math.random() * 3) + 1;
     if (!req.session.authenticated) {
-        res.redirect("/login");
+        res.redirect("/");
     }
-    res.send("Members page");
+    res.send("Members page<br><img src='/img/image-" + num + ".jpg'><br><a href='/logout'>Log Out</a>");
 });
 
 app.get("*", (req, res) => {
