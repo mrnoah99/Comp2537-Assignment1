@@ -127,6 +127,7 @@ app.post("/submitUser", async (req, res) => {
         
         var html = "Successfully created new user";
         res.send(html);
+        res.redirect("/loggedin");
 });
 
 app.post("/loggingin", async (req, res) => {
@@ -179,7 +180,7 @@ app.get("/loggedin", (req, res) => {
 app.get("/logout", (req, res) => {
         req.session.destroy();
     var html = `
-    You are logged out.`;
+    You are logged out.<br><a href='/'>Back to home page</a>`;
     res.send(html);
 });
 
@@ -188,7 +189,7 @@ app.get("/members", (req, res) => {
     if (!req.session.authenticated) {
         res.redirect("/");
     }
-    res.send("Members page<br><img src='/img/image-" + num + ".jpg'><br><a href='/logout'>Log Out</a>");
+    res.send("Members page<br><img src='/public/image-" + num + ".jpg'><br><a href='/loggedin'>Main Page</a><br><a href='/logout'>Log Out</a>");
 });
 
 app.get("*", (req, res) => {
