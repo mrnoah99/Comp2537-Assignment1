@@ -67,7 +67,7 @@ app.get('/nosql-injection', async (req,res) => {
     res.send(`<h1>Hello ${username}</h1>`);
 });
 
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "public"));
 
 app.get("/", (req, res) => {
     if (!req.session.authenticated) {
@@ -189,7 +189,7 @@ app.get("/members", (req, res) => {
     if (!req.session.authenticated) {
         res.redirect("/");
     }
-    res.send("Members page<br><img src='/public/image-" + num + ".jpg'><br><a href='/loggedin'>Main Page</a><br><a href='/logout'>Log Out</a>");
+    res.send("Members page<br><img src='image-" + num + ".jpg'><br><a href='/loggedin'>Main Page</a><br><a href='/logout'>Log Out</a>");
 });
 
 app.get("*", (req, res) => {
