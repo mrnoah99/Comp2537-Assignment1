@@ -5,6 +5,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
+const saltRounds = 12;
 const Joi = require("joi");
 
 const app = express();
@@ -88,6 +89,7 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/signup", (req, res) => {
+    var validateError = req.query.validateError;
     var html = `
     create user
     <form action='/submitUser' method='post'>
@@ -95,6 +97,9 @@ app.get("/signup", (req, res) => {
     <input name='password' type='password' placeholder='password'>
     <button>Submit</button>
     </form>`;
+    if (validateError == 1) {
+        html += '<br>Username must be 2 or more characters and 24 or less.<br>Password must be 4 or more characters and 20 or less.'
+    }
     res.send(html);
 });
 
@@ -104,14 +109,14 @@ app.post("/submitUser", async (req, res) => {
 
         const schema = Joi.object(
             {
-                username: Joi.string().alphanum().max(24).required(),
+                username: Joi.string().alphanum().min(2).max(24).required(),
                 password: Joi.string().min(4).max(20).required()
             });
 
         const validationResult = schema.validate({username, password});
         if (validationResult.error != null) {
             console.log(validationResult.error);
-            res.redirect("/createUser");
+            res.redirect("/signup?validateError=1");
             return;
         }
 
