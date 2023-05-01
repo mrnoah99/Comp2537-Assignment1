@@ -66,13 +66,7 @@ app.get('/nosql-injection', async (req,res) => {
     res.send(`<h1>Hello ${username}</h1>`);
 });
 
-app.use("/img", "/images");
-
-app.use(session({
-    secret: node_session_secret,
-    saveUninitialized: false,
-    resave: true
-}))
+app.use(express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => {
     if (!req.session.authenticated) {
