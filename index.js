@@ -78,13 +78,23 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+    var validateError = req.query.validateError;
     var html = `
     log in
     <form action='/loggingin' method='post'>
     <input name='username' type='text' placeholder='username'>
     <input name='password' type='password' placeholder='password'>
     <button>Submit</button>
-    </form>`
+    </form>`;
+    if (validateError == 1) {
+        html += "<br>Invalid username";
+    } else if (validateError == 2) {
+        html += "<br>Invalid username, user not found";
+    } else if (validateError == 3) {
+        html += "<br>Incorrect password.";
+    } else if (validateError == 4) {
+        html += "You are not logged in, please login.";
+    }
     res.send(html);
 });
 
@@ -137,7 +147,7 @@ app.post("/loggingin", async (req, res) => {
         const validationResult = schema.validate(username);
         if (validationResult.error != null) {
             console.log(validationResult.error);
-            res.redirect("/login");
+            res.redirect("/login?validateError=1");
             return;
         }
 
@@ -146,7 +156,7 @@ app.post("/loggingin", async (req, res) => {
         console.log(result);
         if (result.length != 1) {
             console.log("user not found");
-            res.redirect("/login");
+            res.redirect("/login?validateError=2");
             return;
         }
         if (await bcrypt.compare(password, result[0].password)) {
@@ -160,14 +170,14 @@ app.post("/loggingin", async (req, res) => {
         }
         else {
             console.log("incorrect password");
-            res.redirect("/login");
+            res.redirect("/login?validateError=3");
             return;
         }
 });
 
 app.get("/loggedin", (req, res) => {
     if (!req.session.authenticated) {
-        res.redirect("/login");
+        res.redirect("/login?validateError=4");
     }
     var html = `
     You are logged in!
